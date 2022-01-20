@@ -1,3 +1,7 @@
+Skip to content
+Search or jump to…
+Pull requests
+
 #The purpose of this code is to copy animations for other rigs into a roblox animation
 
 
@@ -17,6 +21,32 @@ scene = context.scene
 
 #--------------------------------------------Copy up to frame
 FrameEnd = 100
+
+#-------------------------------------------------Type the names of the bones from the "To Copy" rig you want the Roblox Rig to copy. The bones must match the bones in R_Bones for the roblox rig
+
+ToCopyRig_BoneNames = [None] * 16
+
+
+
+ToCopyRig_BoneNames[1] = "hip"     #LowerTorso
+ToCopyRig_BoneNames[2] = "r_femur"    #RightUpperLeg
+ToCopyRig_BoneNames[3] = "r_tibia"    #RightLowerLeg
+ToCopyRig_BoneNames[4] = "r_foot"     #RightFoot
+ToCopyRig_BoneNames[5] = "chest"      #UpperTorso
+ToCopyRig_BoneNames[6] = "head"      #Head
+
+ToCopyRig_BoneNames[7] = "r_uparm"   #RightUpperArm
+ToCopyRig_BoneNames[8] = "r_foarm"   #RightLowerArm
+ToCopyRig_BoneNames[9] = "r_hand"    #RightHand
+
+ToCopyRig_BoneNames[10] = "l_uparm"   #LeftUpperArm
+ToCopyRig_BoneNames[11] = "l_foarm"   #LeftLowerArm
+ToCopyRig_BoneNames[12] = "l_hand"    #LeftHand
+
+ToCopyRig_BoneNames[13] = "l_femur"    #LeftUpperLeg
+ToCopyRig_BoneNames[14] = "l_tibia"    #LeftLowerLeg
+ToCopyRig_BoneNames[15] = "l_foot"     #LeftFoot
+
 
 #-------------------------------------------------Get Roblox bones
 RobloxRig = bpy.context.scene.objects['__Rig'] 
@@ -66,31 +96,6 @@ ToCopyRig = bpy.context.scene.objects['root']
 C_Bones = ToCopyRig.pose.bones
 
 
-#-------------------------------------------------Type the names of the bones from the "To Copy" rig you want the Roblox Rig to copy. The bones must match the bones in R_Bones for the roblox rig
-
-ToCopyRig_BoneNames = [None] * 16
-
-
-
-ToCopyRig_BoneNames[1] = "hip"     #LowerTorso
-ToCopyRig_BoneNames[2] = "r_femur"    #RightUpperLeg
-ToCopyRig_BoneNames[3] = "r_tibia"    #RightLowerLeg
-ToCopyRig_BoneNames[4] = "r_foot"     #RightFoot
-ToCopyRig_BoneNames[5] = "chest"      #UpperTorso
-ToCopyRig_BoneNames[6] = "head"      #Head
-
-ToCopyRig_BoneNames[7] = "r_uparm"   #RightUpperArm
-ToCopyRig_BoneNames[8] = "r_foarm"   #RightLowerArm
-ToCopyRig_BoneNames[9] = "r_hand"    #RightHand
-
-ToCopyRig_BoneNames[10] = "l_uparm"   #LeftUpperArm
-ToCopyRig_BoneNames[11] = "l_foarm"   #LeftLowerArm
-ToCopyRig_BoneNames[12] = "l_hand"    #LeftHand
-
-ToCopyRig_BoneNames[13] = "l_femur"    #LeftUpperLeg
-ToCopyRig_BoneNames[14] = "l_tibia"    #LeftLowerLeg
-ToCopyRig_BoneNames[15] = "l_foot"     #LeftFoot
-
 
 #-------*Not my orignal code* Snap rotations
 def snap_rotation(source, target):
@@ -104,7 +109,7 @@ def snap_rotation(source, target):
         matrix=target.matrix,
         from_space='POSE',
         ) 
-         
+
     _, q, _ = Ms.decompose()
     t, _, s = Mt.decompose()
     M = (
@@ -119,33 +124,33 @@ def snap_rotation(source, target):
         )    
 
 #------------------Add bones
- 
+
 def AddBones(_ToCopyRig,_RobloxRigBonesNames,_ToCopyRig_BoneNames):
-    
-    
+
+
     bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-    
+
     bpy.ops.object.mode_set(mode='EDIT')
-    
+
     for x in range(1, 16):
-        
+
         if _ToCopyRig_BoneNames[x]:
             ebs = _ToCopyRig.data.edit_bones
-    
+
             #Create new bone
             eb = ebs.new(_RobloxRigBonesNames[x])
-            
+
             eb.head = (0, 1, 1)
             _ToCopyRig.data.edit_bones[_RobloxRigBonesNames[x]].parent = _ToCopyRig.data.edit_bones[_ToCopyRig_BoneNames[x]]
             eb.head = _ToCopyRig.data.edit_bones[_ToCopyRig_BoneNames[x]].head
             eb.tail = _ToCopyRig.data.edit_bones[_ToCopyRig_BoneNames[x]].head + Vector((5,5,5))
             eb.length = .2
-            
+
 #Put rig to copy pose in Roblox pose            
 def NormalizeBones(_ToCopyRig,_RobloxNamesBonesInCopyRig):
 
     bpy.ops.object.mode_set(mode='POSE')
-    
+
     for x in range(1, 16):
 
         if _RobloxNamesBonesInCopyRig[x]:
@@ -159,61 +164,61 @@ def NormalizeBones(_ToCopyRig,_RobloxNamesBonesInCopyRig):
             bone.keyframe_insert(data_path='rotation_quaternion',frame=0)
             bone.keyframe_insert(data_path="location", frame=0)
             bone.keyframe_insert(data_path="scale", frame=0)
-            
+
 
 def SetToBone(Rig): 
-    
+
     print("Rangex: ")
     bpy.ops.object.mode_set(mode='POSE')    
     for x in range(1, 16):
-       
+
         y = 15 - x
-        
+
         if RobloxRigBonesNames[y]:
-            
+
             print("Rig", Rig.pose.bones[RobloxRigBonesNames[y]])
             print("Roblox ", RobloxRig.pose.bones[RobloxRigBonesNames[y]])
             snap_rotation( 
                Rig.pose.bones[RobloxRigBonesNames[y]],
                RobloxRig.pose.bones[RobloxRigBonesNames[y]]
             ) 
-  
+
 #Rig to get frames from
 def SetKeyFrames(Rig, FrameStart,FrameEnd):  
-    
+
     for f in range(FrameStart, FrameEnd):
-       
+
         bpy.context.view_layer.update()
         scene.frame_current = f
 
         bpy.context.view_layer.update()
-            
-       
+
+
         for x in range(1, 16):
             bpy.context.view_layer.update()
             SetToBone(Rig)
-            
+
         bpy.context.view_layer.update()
         SetToBone(Rig)
-            
+
         bpy.context.view_layer.update()
         SetToBone(Rig)   
-            
+
         bpy.context.view_layer.update()
         SetToBone(Rig) 
-            
+
         bpy.context.view_layer.update()
         SetToBone(Rig) 
-            
+
         bpy.context.view_layer.update()
         SetToBone(Rig) 
-            
+
         bpy.context.view_layer.update()
         SetToBone(Rig) 
-            
+
         bpy.context.view_layer.update()
         SetToBone(Rig) 
-            
+
         for bone in R_Bones:
             bone.scale = Vector( (1, 1, 1) )
             bone.keyframe_insert(data_path='rotation_quaternion',frame=f)
@@ -221,19 +226,19 @@ def SetKeyFrames(Rig, FrameStart,FrameEnd):
             bone.keyframe_insert(data_path="scale", frame=f)
             bpy.context.view_layer.update()
 
-         
+
 if __name__ == "__main__":
     context = bpy.context
     scene = context.scene
-    
+
     #Set to first frame
     bpy.context.view_layer.update()
     scene.frame_current = 0
-    
+
     #Add bones to ToCopyRig
     bpy.context.view_layer.update()
     AddBones(ToCopyRig, RobloxRigBonesNames, ToCopyRig_BoneNames) 
-    
+
     #Align new bones with Roblox Rig
     bpy.context.view_layer.update()
     NormalizeBones(ToCopyRig, RobloxRigBonesNames)
